@@ -17,7 +17,7 @@
       --surface:#ffffff;
       --muted-1:#f2f2f2;
       --muted-2:#e6e6e6;
-      --text:#111;
+      --text:#222;
       --muted-text:#6b6b6b;
       --accent:#f6c85f; /* amarillo */
       --accent-dark:#e4b84b;
@@ -45,7 +45,7 @@
     header{
       position:fixed;top:0;left:0;right:0;height:68px;
       display:flex;align-items:center;justify-content:space-between;padding:0 18px;
-      background:rgba(255,255,255,0.88);backdrop-filter: blur(6px);
+      background:rgba(255,255,255,0.8);backdrop-filter: blur(6px);
       border-bottom:1px solid var(--muted-2);z-index:1500;
     }
     .brand{display:flex;align-items:center;gap:12px}
@@ -61,7 +61,7 @@
 
     /* hamburger (panel) */
     .hamburger{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer}
-    .burger-lines{width:22px;height:2px;background:#222;border-radius:2px;position:relative;display:block}
+    .burger-lines{width:22px;height:2px;background:#222;border-radius:2px;position:relative}
     .burger-lines::before,.burger-lines::after{content:"";position:absolute;left:0;width:22px;height:2px;background:#222;border-radius:2px}
     .burger-lines::before{top:-7px}.burger-lines::after{top:7px}
     .hamburger.open .burger-lines{background:transparent}
@@ -122,15 +122,10 @@
     .price{font-weight:800;color:#111}
 
     /* ---------- PRODUCT MODAL (center) ---------- */
-    .overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,0.28);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-      z-index:1420;opacity:0;visibility:hidden;transition:opacity .22s;
-    }
-    .overlay.show{opacity:1;visibility:visible}
     .overlay-modal{
-      position:fixed;inset:0;/* used in conjunction with .overlay to separate concerns */
-      pointer-events:none;
+      position:fixed;inset:0;background:rgba(0,0,0,0.28);backdrop-filter:blur(4px);opacity:0;visibility:hidden;transition:opacity .22s,z-index 0s;z-index:1400;
     }
+    .overlay-modal.show{opacity:1;visibility:visible}
     .product-modal{
       position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.98);
       width:90%;max-width:980px;height:auto;max-height:86vh;overflow:auto;
@@ -190,6 +185,27 @@
     .foot-inner{max-width:var(--max-width);margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px}
     footer a{color:var(--text);font-weight:700}
 
+    /* ---------- CONTACT PAGE (full-screen interface) ---------- */
+    .contact-page{
+      position:fixed;inset:0;background:linear-gradient(180deg,var(--surface),#fff);
+      z-index:1700;visibility:hidden;opacity:0;transform:translateY(6px);transition:opacity .22s, transform .22s, visibility 0s .22s;
+      display:flex;flex-direction:column;align-items:center;padding-top:80px;overflow:auto;
+    }
+    .contact-page.show{visibility:visible;opacity:1;transform:none;transition-delay:0s;pointer-events:auto}
+    .contact-inner{max-width:1100px;width:100%;padding:22px}
+    .contact-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    .contact-card{background:var(--surface);padding:18px;border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,0.06);display:grid;grid-template-columns:1fr 420px;gap:16px}
+    .contact-left p{color:var(--muted-text)}
+    .map-frame{width:100%;height:320px;border-radius:10px;border:1px solid var(--muted-2);overflow:hidden}
+    .contact-form input,.contact-form textarea,.contact-form select{width:100%;padding:10px;border-radius:8px;border:1px solid #eee}
+    .contact-actions{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .contact-back{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:8px 12px;border-radius:8px;cursor:pointer}
+
+    /* responsive for contact */
+    @media (max-width:1020px){
+      .contact-card{grid-template-columns:1fr}
+    }
+
     /* ---------- Responsive ---------- */
     @media (max-width:1020px){
       .products-grid{grid-template-columns:repeat(3,1fr)}
@@ -208,6 +224,7 @@
       .products-grid{grid-template-columns:1fr}
       .hero-card{flex-direction:column;align-items:flex-start}
       .logo{width:40px;height:40px}
+      .product-card{padding:10px}
     }
   </style>
 </head>
@@ -249,7 +266,7 @@
         <a href="#catalogo" data-target="catalogo">📦 Catálogo</a>
         <a href="#comentarios" data-target="comentarios">💬 Comentarios</a>
         <a href="#sobre-nosotros" data-target="sobre-nosotros">🌿 Sobre nosotros</a>
-        <a href="#contacto" data-target="contacto">📞 Contacto</a>
+        <a href="#" data-target="contacto">📞 Contacto</a>
         <a href="https://instagram.com" target="_blank" rel="noopener">📸 Instagram</a>
       </nav>
 
@@ -375,8 +392,8 @@
         </div>
       </section>
 
-      <!-- CONTACTO -->
-      <section id="contacto">
+      <!-- CONTACTO (sección de referencia - pero la interfaz real es la "Contact Page") -->
+      <section id="contacto" aria-hidden="true">
         <div class="section-head">
           <div>
             <div class="section-title">📞 Contáctanos</div>
@@ -411,6 +428,9 @@
       </div>
     </footer>
   </main>
+
+  <!-- OVERLAY for modal specifically (works together with overlay) -->
+  <div id="overlayModal" class="overlay-modal" aria-hidden="true"></div>
 
   <!-- PRODUCT MODAL (central window ~70%) -->
   <div id="productModal" class="product-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
@@ -502,6 +522,74 @@
   <!-- THANK YOU TOAST -->
   <div id="toast" class="toast" role="status" aria-live="polite">¡Gracias por tu valoración!</div>
 
+  <!-- CONTACT PAGE (full-screen interface) -->
+  <div id="contactPage" class="contact-page" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="contact-inner">
+      <div class="contact-header">
+        <div>
+          <div style="font-weight:800;font-size:1.2rem">Contacto — HogarSmart</div>
+          <div style="color:var(--muted-text)">Estamos listos para ayudarte — escríbenos o visítanos</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button id="contactBack" class="contact-back" aria-label="Volver">← Volver</button>
+        </div>
+      </div>
+
+      <div class="contact-card">
+        <div class="contact-left">
+          <p style="margin:0 0 12px;color:var(--muted-text)">Completa el formulario o usa los datos de contacto. También puedes ver nuestra ubicación en Bogotá en el mapa a la derecha.</p>
+
+          <form id="contactForm" class="contact-form" autocomplete="off">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <input name="name" type="text" placeholder="Tu nombre" required>
+              <input name="email" type="email" placeholder="Tu email" required>
+            </div>
+
+            <div style="margin-top:8px">
+              <input name="subject" type="text" placeholder="Asunto" required>
+            </div>
+
+            <div style="margin-top:8px">
+              <textarea name="message" rows="6" placeholder="Escribe tu mensaje aquí..." required></textarea>
+            </div>
+
+            <div class="contact-actions">
+              <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+              <button type="button" class="btn btn-ghost" id="contactClose">Cerrar</button>
+            </div>
+
+            <div id="contactMsg" style="display:none;margin-top:10px;font-weight:700;color:green"></div>
+          </form>
+
+          <div style="margin-top:16px;color:var(--muted-text)">
+            <div style="font-weight:700">Email</div>
+            <div>contacto@hogarsmart.com</div>
+            <div style="height:8px"></div>
+            <div style="font-weight:700">WhatsApp</div>
+            <div>+57 300 000 0000</div>
+            <div style="height:8px"></div>
+            <div style="font-weight:700">Horario</div>
+            <div>Lun - Vie 9:00 - 18:00</div>
+          </div>
+        </div>
+
+        <div>
+          <!-- OpenStreetMap embed centered on Bogotá (marker approx at 4.6097, -74.0817) -->
+          <div class="map-frame" aria-hidden="false">
+            <iframe width="100%" height="100%" frameborder="0" scrolling="no"
+              src="https://www.openstreetmap.org/export/embed.html?bbox=-74.0930%2C4.6020%2C-74.0470%2C4.6260&layer=mapnik&marker=4.6140,-74.0700"
+              style="border:0"></iframe>
+          </div>
+
+          <div style="margin-top:10px;color:var(--muted-text);font-size:0.95rem">
+            <div style="font-weight:700">Nuestra ubicación</div>
+            <div>Bogotá, Colombia (ubicación de referencia)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
 /* ---------- DATA: 16 Productos genéricos ---------- */
 const PRODUCTS = [
@@ -568,6 +656,7 @@ const productsFeatured = document.getElementById('productsFeatured');
 const catalogGrid = document.getElementById('catalogGrid');
 
 const productModal = document.getElementById('productModal');
+const overlayModal = document.getElementById('overlayModal');
 const closeProductModal = document.getElementById('closeProductModal');
 const pmImage = document.getElementById('pmImage');
 const pmThumbs = document.getElementById('pmThumbs');
@@ -589,6 +678,12 @@ const cancelRatingBtn = document.getElementById('cancelRating');
 const ratingComment = document.getElementById('ratingComment');
 
 const toast = document.getElementById('toast');
+
+const contactPage = document.getElementById('contactPage');
+const contactBack = document.getElementById('contactBack');
+const contactClose = document.getElementById('contactClose');
+const contactForm = document.getElementById('contactForm');
+const contactMsg = document.getElementById('contactMsg');
 
 let currentProduct = null;
 
@@ -691,6 +786,7 @@ function openProductModalByIndex(index){
 
   // show overlay & modal and blur content
   overlay.classList.add('show');
+  overlayModal.classList.add('show');
   productModal.classList.add('show');
   mainContent.classList.add('blurred');
 
@@ -701,6 +797,7 @@ function openProductModalByIndex(index){
 /* ---------- Close product modal ---------- */
 function closeProductModalFn(){
   productModal.classList.remove('show');
+  overlayModal.classList.remove('show');
   overlay.classList.remove('show');
   mainContent.classList.remove('blurred');
   currentProduct = null;
@@ -722,6 +819,23 @@ function closeSide(){
   menuBtn.setAttribute('aria-expanded','false');
 }
 
+/* ---------- Contact page open/close (new interface) ---------- */
+function openContactPage(){
+  // close side first
+  closeSide();
+  // show contact page with overlay blur
+  contactPage.classList.add('show');
+  overlay.classList.add('show');
+  mainContent.classList.add('blurred');
+  contactPage.setAttribute('aria-hidden','false');
+}
+function closeContactPage(){
+  contactPage.classList.remove('show');
+  overlay.classList.remove('show');
+  mainContent.classList.remove('blurred');
+  contactPage.setAttribute('aria-hidden','true');
+}
+
 /* ---------- Wire events ---------- */
 menuBtn.addEventListener('click', ()=> {
   if(sidePanel.classList.contains('show')) closeSide();
@@ -729,10 +843,11 @@ menuBtn.addEventListener('click', ()=> {
 });
 closePanel.addEventListener('click', closeSide);
 
-// overlay closes modal or side
+// overlay closes modal, side, contact page or rating
 overlay.addEventListener('click', ()=>{
   if(sidePanel.classList.contains('show')) closeSide();
   if(productModal.classList.contains('show')) closeProductModalFn();
+  if(contactPage.classList.contains('show')) closeContactPage();
   if(ratingPopup.style.display === 'block') closeRatingPopup();
 });
 
@@ -763,10 +878,10 @@ pmForm.addEventListener('submit', (e)=>{
     pmMsg.textContent = 'Por favor completa los campos obligatorios.';
     return;
   }
-  // simulate order (virtual confirmation)
+  // simulate order
   pmMsg.style.display = 'block';
   pmMsg.style.color = 'green';
-  pmMsg.textContent = '✅ Pedido recibido (confirmación virtual). Te contactaremos por WhatsApp en breve.';
+  pmMsg.textContent = '✅ Gracias por tu pedido. Te contactaremos por WhatsApp en breve.';
   pmForm.reset();
 
   // auto close modal after small delay
@@ -825,13 +940,15 @@ pmRateBtn.addEventListener('click', (e)=>{
 const panelLinks = document.querySelectorAll('#sidePanel a');
 panelLinks.forEach(link=>{
   link.addEventListener('click', (ev)=>{
-    // If internal anchor, scroll to section then close panel
     const target = link.getAttribute('data-target');
-    if(target){
+    if(target && target !== 'contacto'){
       ev.preventDefault();
       closeSide();
-      // small delay to allow panel to close visually
       setTimeout(()=> scrollToSection(target), 220);
+    } else if(target === 'contacto') {
+      ev.preventDefault();
+      // open contact page (new interface)
+      openContactPage();
     } else {
       // external (instagram etc) : just close
       closeSide();
@@ -866,16 +983,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
     setTimeout(()=>{ c.style.transition = 'opacity .45s ease, transform .45s ease'; c.style.opacity = 1; c.style.transform = 'none'; }, 80 * i);
   });
 
-  // prevent nested clicks from bubbling on view/buy buttons
+  // ensure featured and top clickable buttons wired (if dynamic)
   document.querySelectorAll('.view-btn, .buy-btn').forEach(b => b.addEventListener('click', e => e.stopPropagation()));
 });
 
-/* ---------- Accessibility: ESC to close modals/panels ---------- */
+/* ---------- Accessibility: ESC to close modals/panels/pages ---------- */
 window.addEventListener('keydown',(e)=>{
   if(e.key === 'Escape'){
     if(ratingPopup.style.display === 'block') closeRatingPopup();
     else if(productModal.classList.contains('show')) closeProductModalFn();
     else if(sidePanel.classList.contains('show')) closeSide();
+    else if(contactPage.classList.contains('show')) closeContactPage();
   }
 });
 
@@ -887,6 +1005,34 @@ topProductsList.addEventListener('click',(e)=>{
     if(idx>=0) openProductModalByIndex(idx);
   }
 });
+
+/* ---------- Contact page controls ---------- */
+contactBack.addEventListener('click', ()=> closeContactPage());
+contactClose.addEventListener('click', ()=> closeContactPage());
+
+contactForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const fd = new FormData(contactForm);
+  if(!fd.get('name') || !fd.get('email') || !fd.get('message')){
+    contactMsg.style.display = 'block';
+    contactMsg.style.color = 'crimson';
+    contactMsg.textContent = 'Por favor completa los campos obligatorios.';
+    return;
+  }
+  // simulate sending
+  contactMsg.style.display = 'block';
+  contactMsg.style.color = 'green';
+  contactMsg.textContent = '✅ Mensaje enviado. Te responderemos pronto.';
+  contactForm.reset();
+
+  // after 2s close and show toast
+  setTimeout(()=>{
+    closeContactPage();
+    showToast('Gracias por contactarnos — revisaremos tu mensaje.');
+    contactMsg.style.display = 'none';
+  }, 1800);
+});
+
 </script>
 
 </body>
