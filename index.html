@@ -17,7 +17,7 @@
       --surface:#ffffff;
       --muted-1:#f2f2f2;
       --muted-2:#e6e6e6;
-      --text:#222;
+      --text:#111;
       --muted-text:#6b6b6b;
       --accent:#f6c85f; /* amarillo */
       --accent-dark:#e4b84b;
@@ -45,7 +45,7 @@
     header{
       position:fixed;top:0;left:0;right:0;height:68px;
       display:flex;align-items:center;justify-content:space-between;padding:0 18px;
-      background:rgba(255,255,255,0.8);backdrop-filter: blur(6px);
+      background:rgba(255,255,255,0.88);backdrop-filter: blur(6px);
       border-bottom:1px solid var(--muted-2);z-index:1500;
     }
     .brand{display:flex;align-items:center;gap:12px}
@@ -61,7 +61,7 @@
 
     /* hamburger (panel) */
     .hamburger{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer}
-    .burger-lines{width:22px;height:2px;background:#222;border-radius:2px;position:relative}
+    .burger-lines{width:22px;height:2px;background:#222;border-radius:2px;position:relative;display:block}
     .burger-lines::before,.burger-lines::after{content:"";position:absolute;left:0;width:22px;height:2px;background:#222;border-radius:2px}
     .burger-lines::before{top:-7px}.burger-lines::after{top:7px}
     .hamburger.open .burger-lines{background:transparent}
@@ -122,10 +122,15 @@
     .price{font-weight:800;color:#111}
 
     /* ---------- PRODUCT MODAL (center) ---------- */
-    .overlay-modal{
-      position:fixed;inset:0;background:rgba(0,0,0,0.28);backdrop-filter:blur(4px);opacity:0;visibility:hidden;transition:opacity .22s,z-index 0s;z-index:1400;
+    .overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,0.28);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+      z-index:1420;opacity:0;visibility:hidden;transition:opacity .22s;
     }
-    .overlay-modal.show{opacity:1;visibility:visible}
+    .overlay.show{opacity:1;visibility:visible}
+    .overlay-modal{
+      position:fixed;inset:0;/* used in conjunction with .overlay to separate concerns */
+      pointer-events:none;
+    }
     .product-modal{
       position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.98);
       width:90%;max-width:980px;height:auto;max-height:86vh;overflow:auto;
@@ -407,9 +412,6 @@
     </footer>
   </main>
 
-  <!-- OVERLAY for modal specifically (works together with overlay) -->
-  <div id="overlayModal" class="overlay-modal" aria-hidden="true"></div>
-
   <!-- PRODUCT MODAL (central window ~70%) -->
   <div id="productModal" class="product-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
     <button id="closeProductModal" class="hamburger" style="position:absolute;right:14px;top:12px;background:transparent;border:none;font-size:18px;cursor:pointer">✕</button>
@@ -566,7 +568,6 @@ const productsFeatured = document.getElementById('productsFeatured');
 const catalogGrid = document.getElementById('catalogGrid');
 
 const productModal = document.getElementById('productModal');
-const overlayModal = document.getElementById('overlayModal');
 const closeProductModal = document.getElementById('closeProductModal');
 const pmImage = document.getElementById('pmImage');
 const pmThumbs = document.getElementById('pmThumbs');
@@ -690,7 +691,6 @@ function openProductModalByIndex(index){
 
   // show overlay & modal and blur content
   overlay.classList.add('show');
-  overlayModal.classList.add('show');
   productModal.classList.add('show');
   mainContent.classList.add('blurred');
 
@@ -701,7 +701,6 @@ function openProductModalByIndex(index){
 /* ---------- Close product modal ---------- */
 function closeProductModalFn(){
   productModal.classList.remove('show');
-  overlayModal.classList.remove('show');
   overlay.classList.remove('show');
   mainContent.classList.remove('blurred');
   currentProduct = null;
@@ -764,10 +763,10 @@ pmForm.addEventListener('submit', (e)=>{
     pmMsg.textContent = 'Por favor completa los campos obligatorios.';
     return;
   }
-  // simulate order
+  // simulate order (virtual confirmation)
   pmMsg.style.display = 'block';
   pmMsg.style.color = 'green';
-  pmMsg.textContent = '✅ Gracias por tu pedido. Te contactaremos por WhatsApp en breve.';
+  pmMsg.textContent = '✅ Pedido recibido (confirmación virtual). Te contactaremos por WhatsApp en breve.';
   pmForm.reset();
 
   // auto close modal after small delay
@@ -867,7 +866,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     setTimeout(()=>{ c.style.transition = 'opacity .45s ease, transform .45s ease'; c.style.opacity = 1; c.style.transform = 'none'; }, 80 * i);
   });
 
-  // ensure featured and top clickable buttons wired (if dynamic)
+  // prevent nested clicks from bubbling on view/buy buttons
   document.querySelectorAll('.view-btn, .buy-btn').forEach(b => b.addEventListener('click', e => e.stopPropagation()));
 });
 
@@ -887,152 +886,6 @@ topProductsList.addEventListener('click',(e)=>{
     const idx = Array.from(topProductsList.children).indexOf(card);
     if(idx>=0) openProductModalByIndex(idx);
   }
-});
-</script>
-<script>
-// ===============================
-// CONFIGURACIÓN DE PRODUCTOS
-// ===============================
-const productos = [
-  {
-    nombre: "Robot limpiador inteligente",
-    precio: "$249.900",
-    descripcion: "Mantén tus pisos impecables sin esfuerzo con este robot de limpieza automático.",
-    imagen: "https://cdn.pixabay.com/photo/2019/07/09/10/54/robot-4321721_1280.jpg",
-    calificacion: 4.8
-  },
-  {
-    nombre: "Dispositivo purificador de aire",
-    precio: "$179.900",
-    descripcion: "Elimina polvo, humo y malos olores con este purificador silencioso y eficiente.",
-    imagen: "https://cdn.pixabay.com/photo/2020/05/12/16/53/air-purifier-5167718_1280.jpg",
-    calificacion: 4.5
-  },
-  {
-    nombre: "Organizador magnético de cocina",
-    precio: "$99.900",
-    descripcion: "Optimiza el espacio de tu cocina con este elegante organizador magnético multifunción.",
-    imagen: "https://cdn.pixabay.com/photo/2016/03/05/22/48/kitchen-1239430_1280.jpg",
-    calificacion: 4.6
-  },
-  {
-    nombre: "Dispositivo automático de jabón",
-    precio: "$69.900",
-    descripcion: "Dispensador automático con sensor para una experiencia más higiénica en tu hogar.",
-    imagen: "https://cdn.pixabay.com/photo/2020/04/22/16/21/soap-dispenser-5077966_1280.jpg",
-    calificacion: 4.7
-  },
-  {
-    nombre: "Lámpara inteligente táctil",
-    precio: "$129.900",
-    descripcion: "Control táctil, luz cálida y diseño minimalista para tu espacio.",
-    imagen: "https://cdn.pixabay.com/photo/2016/11/29/08/13/lamp-1867312_1280.jpg",
-    calificacion: 4.9
-  }
-];
-
-// ===============================
-// ELEMENTOS DEL DOM
-// ===============================
-const menuBtn = document.getElementById('menuBtn');
-const sidebar = document.getElementById('sidebar');
-const closeBtn = document.getElementById('closeBtn');
-const catalogGrid = document.getElementById('catalogGrid');
-const bestSellersGrid = document.getElementById('bestSellersGrid');
-const productModal = document.getElementById('productModal');
-const modalClose = document.getElementById('modalClose');
-const modalContent = document.getElementById('modalContent');
-
-// ===============================
-// MENÚ INTERACTIVO
-// ===============================
-menuBtn.addEventListener('click', () => {
-  sidebar.classList.add('active');
-  document.body.classList.add('blurred');
-});
-
-closeBtn.addEventListener('click', () => {
-  sidebar.classList.remove('active');
-  document.body.classList.remove('blurred');
-});
-
-document.querySelectorAll('.sidebar a').forEach(link => {
-  link.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-    document.body.classList.remove('blurred');
-  });
-});
-
-// ===============================
-// CARGAR PRODUCTOS EN CATÁLOGO
-// ===============================
-function cargarProductos() {
-  if (catalogGrid) {
-    productos.forEach((p, i) => {
-      const card = document.createElement('div');
-      card.classList.add('product-card');
-      card.innerHTML = `
-        <img src="${p.imagen}" alt="${p.nombre}">
-        <h3>${p.nombre}</h3>
-        <p>${p.precio}</p>
-        <button class="view-btn" data-index="${i}">Ver producto</button>
-      `;
-      catalogGrid.appendChild(card);
-    });
-  }
-
-  if (bestSellersGrid) {
-    productos.slice(0, 4).forEach((p, i) => {
-      const card = document.createElement('div');
-      card.classList.add('product-card');
-      card.innerHTML = `
-        <img src="${p.imagen}" alt="${p.nombre}">
-        <h3>${p.nombre}</h3>
-        <p>${p.precio}</p>
-        <button class="view-btn" data-index="${i}">Ver producto</button>
-      `;
-      bestSellersGrid.appendChild(card);
-    });
-  }
-}
-cargarProductos();
-
-// ===============================
-// MODAL DE PRODUCTO
-// ===============================
-document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('view-btn')) {
-    const index = e.target.dataset.index;
-    const producto = productos[index];
-    abrirModal(producto);
-  }
-});
-
-function abrirModal(producto) {
-  modalContent.innerHTML = `
-    <div class="modal-product">
-      <img src="${producto.imagen}" alt="${producto.nombre}">
-      <h2>${producto.nombre}</h2>
-      <p class="precio">${producto.precio}</p>
-      <p>${producto.descripcion}</p>
-      <p>⭐ ${producto.calificacion} / 5</p>
-      <button class="buy-btn">Comprar ahora</button>
-    </div>
-  `;
-  productModal.style.display = 'flex';
-  document.body.classList.add('blurred');
-}
-
-modalClose.addEventListener('click', () => {
-  productModal.style.display = 'none';
-  document.body.classList.remove('blurred');
-});
-
-// ===============================
-// ANIMACIÓN DE APARICIÓN SUAVE
-// ===============================
-window.addEventListener('load', () => {
-  document.body.classList.add('page-loaded');
 });
 </script>
 
