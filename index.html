@@ -889,6 +889,152 @@ topProductsList.addEventListener('click',(e)=>{
   }
 });
 </script>
+<script>
+// ===============================
+// CONFIGURACIÓN DE PRODUCTOS
+// ===============================
+const productos = [
+  {
+    nombre: "Robot limpiador inteligente",
+    precio: "$249.900",
+    descripcion: "Mantén tus pisos impecables sin esfuerzo con este robot de limpieza automático.",
+    imagen: "https://cdn.pixabay.com/photo/2019/07/09/10/54/robot-4321721_1280.jpg",
+    calificacion: 4.8
+  },
+  {
+    nombre: "Dispositivo purificador de aire",
+    precio: "$179.900",
+    descripcion: "Elimina polvo, humo y malos olores con este purificador silencioso y eficiente.",
+    imagen: "https://cdn.pixabay.com/photo/2020/05/12/16/53/air-purifier-5167718_1280.jpg",
+    calificacion: 4.5
+  },
+  {
+    nombre: "Organizador magnético de cocina",
+    precio: "$99.900",
+    descripcion: "Optimiza el espacio de tu cocina con este elegante organizador magnético multifunción.",
+    imagen: "https://cdn.pixabay.com/photo/2016/03/05/22/48/kitchen-1239430_1280.jpg",
+    calificacion: 4.6
+  },
+  {
+    nombre: "Dispositivo automático de jabón",
+    precio: "$69.900",
+    descripcion: "Dispensador automático con sensor para una experiencia más higiénica en tu hogar.",
+    imagen: "https://cdn.pixabay.com/photo/2020/04/22/16/21/soap-dispenser-5077966_1280.jpg",
+    calificacion: 4.7
+  },
+  {
+    nombre: "Lámpara inteligente táctil",
+    precio: "$129.900",
+    descripcion: "Control táctil, luz cálida y diseño minimalista para tu espacio.",
+    imagen: "https://cdn.pixabay.com/photo/2016/11/29/08/13/lamp-1867312_1280.jpg",
+    calificacion: 4.9
+  }
+];
+
+// ===============================
+// ELEMENTOS DEL DOM
+// ===============================
+const menuBtn = document.getElementById('menuBtn');
+const sidebar = document.getElementById('sidebar');
+const closeBtn = document.getElementById('closeBtn');
+const catalogGrid = document.getElementById('catalogGrid');
+const bestSellersGrid = document.getElementById('bestSellersGrid');
+const productModal = document.getElementById('productModal');
+const modalClose = document.getElementById('modalClose');
+const modalContent = document.getElementById('modalContent');
+
+// ===============================
+// MENÚ INTERACTIVO
+// ===============================
+menuBtn.addEventListener('click', () => {
+  sidebar.classList.add('active');
+  document.body.classList.add('blurred');
+});
+
+closeBtn.addEventListener('click', () => {
+  sidebar.classList.remove('active');
+  document.body.classList.remove('blurred');
+});
+
+document.querySelectorAll('.sidebar a').forEach(link => {
+  link.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    document.body.classList.remove('blurred');
+  });
+});
+
+// ===============================
+// CARGAR PRODUCTOS EN CATÁLOGO
+// ===============================
+function cargarProductos() {
+  if (catalogGrid) {
+    productos.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.classList.add('product-card');
+      card.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}">
+        <h3>${p.nombre}</h3>
+        <p>${p.precio}</p>
+        <button class="view-btn" data-index="${i}">Ver producto</button>
+      `;
+      catalogGrid.appendChild(card);
+    });
+  }
+
+  if (bestSellersGrid) {
+    productos.slice(0, 4).forEach((p, i) => {
+      const card = document.createElement('div');
+      card.classList.add('product-card');
+      card.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}">
+        <h3>${p.nombre}</h3>
+        <p>${p.precio}</p>
+        <button class="view-btn" data-index="${i}">Ver producto</button>
+      `;
+      bestSellersGrid.appendChild(card);
+    });
+  }
+}
+cargarProductos();
+
+// ===============================
+// MODAL DE PRODUCTO
+// ===============================
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('view-btn')) {
+    const index = e.target.dataset.index;
+    const producto = productos[index];
+    abrirModal(producto);
+  }
+});
+
+function abrirModal(producto) {
+  modalContent.innerHTML = `
+    <div class="modal-product">
+      <img src="${producto.imagen}" alt="${producto.nombre}">
+      <h2>${producto.nombre}</h2>
+      <p class="precio">${producto.precio}</p>
+      <p>${producto.descripcion}</p>
+      <p>⭐ ${producto.calificacion} / 5</p>
+      <button class="buy-btn">Comprar ahora</button>
+    </div>
+  `;
+  productModal.style.display = 'flex';
+  document.body.classList.add('blurred');
+}
+
+modalClose.addEventListener('click', () => {
+  productModal.style.display = 'none';
+  document.body.classList.remove('blurred');
+});
+
+// ===============================
+// ANIMACIÓN DE APARICIÓN SUAVE
+// ===============================
+window.addEventListener('load', () => {
+  document.body.classList.add('page-loaded');
+});
+</script>
 
 </body>
 </html>
