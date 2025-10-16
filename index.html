@@ -1061,3 +1061,80 @@ contactForm.addEventListener('submit', (e)=>{
 
 </body>
 </html>
+<!-- Mensaje inicial arriba de la página -->
+<div id="form-notification" style="background-color: #f7f7f7; padding: 10px; text-align: center; font-weight: bold;">
+  En cuanto termines el formulario serás redireccionado con uno de nuestros asesores para terminar de confirmar tu pedido.
+</div>
+
+<!-- Formulario reforzado -->
+<form id="pedidoForm" style="margin-top: 20px; max-width: 500px; margin-left:auto; margin-right:auto;">
+  <label>Nombre completo*</label>
+  <input type="text" name="nombre" id="nombre" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+  <label>Correo electrónico*</label>
+  <input type="email" name="correo" id="correo" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+  <label>Número de teléfono*</label>
+  <input type="tel" name="telefono" id="telefono" required pattern="[0-9]{7,15}" placeholder="Ej: 3001234567" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+  <label>Dirección completa*</label>
+  <input type="text" name="direccion" id="direccion" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+  <label>Comentarios adicionales</label>
+  <textarea name="comentarios" id="comentarios" style="width: 100%; padding: 8px; margin-bottom: 10px;"></textarea>
+
+  <button type="submit" style="padding: 10px 20px; font-weight: bold;">Enviar pedido</button>
+</form>
+
+<!-- Mensaje de envío -->
+<div id="mensajeEnvio" style="display:none; text-align:center; margin-top: 20px; font-weight:bold;">
+  En breve serás redireccionado con un asesor para terminar de confirmar tu pedido.
+</div>
+
+<script>
+document.getElementById('pedidoForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Validación básica (ya tenemos required en HTML)
+    var nombre = document.getElementById('nombre').value.trim();
+    var correo = document.getElementById('correo').value.trim();
+    var telefono = document.getElementById('telefono').value.trim();
+    var direccion = document.getElementById('direccion').value.trim();
+    var comentarios = document.getElementById('comentarios').value.trim();
+
+    if(!nombre || !correo || !telefono || !direccion){
+        alert("Por favor completa todos los campos obligatorios.");
+        return;
+    }
+
+    // Enviar datos a tu servidor o correo (ejemplo usando fetch a tu endpoint)
+    fetch('https://tuservidor.com/guardar-formulario', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            nombre: nombre,
+            correo: correo,
+            telefono: telefono,
+            direccion: direccion,
+            comentarios: comentarios
+        })
+    }).then(function(response){
+        // Mostrar mensaje y redireccionar
+        document.getElementById('pedidoForm').style.display = 'none';
+        document.getElementById('mensajeEnvio').style.display = 'block';
+
+        // Redireccionar a WhatsApp después de 3 segundos
+        setTimeout(function(){
+            // Cambia el número de WhatsApp por el tuyo
+            var numeroWhatsApp = '573001234567';
+            var mensaje = encodeURIComponent("Hola, he completado el formulario y quiero confirmar mi pedido.");
+            window.location.href = "https://wa.me/" + numeroWhatsApp + "?text=" + mensaje;
+        }, 3000);
+    }).catch(function(error){
+        alert("Ocurrió un error al enviar el formulario. Intenta nuevamente.");
+        console.error(error);
+    });
+});
+</script>
