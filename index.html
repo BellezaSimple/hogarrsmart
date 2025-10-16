@@ -121,6 +121,10 @@
 
     .price{font-weight:800;color:#111}
 
+    .old-price{font-weight:700;color:var(--muted-text);text-decoration:line-through;font-size:0.9rem;margin-right:8px;color:#b94a48}
+
+    .offer-badge{background:linear-gradient(90deg,#ffcf6a,#f6bf2a);padding:6px 8px;border-radius:8px;font-weight:800;color:#3a2b00;font-size:12px}
+
     /* ---------- PRODUCT MODAL (center) ---------- */
     .overlay-modal{
       position:fixed;inset:0;background:rgba(0,0,0,0.28);backdrop-filter:blur(4px);opacity:0;visibility:hidden;transition:opacity .22s,z-index 0s;z-index:1400;
@@ -412,7 +416,7 @@
 
           <div style="min-width:260px">
             <div style="font-weight:700">WhatsApp</div>
-            <div style="color:var(--muted-text)">+57 300 000 0000</div>
+            <div style="color:var(--muted-text)">+57 32138231126</div>
             <div style="height:8px"></div>
             <div style="color:var(--muted-text)">Horario: Lun - Vie 9:00 - 18:00</div>
           </div>
@@ -450,6 +454,7 @@
           </div>
 
           <div style="text-align:right">
+            <div id="pmOldPrice" class="old-price" style="display:none"></div>
             <div id="pmPrice" style="font-weight:900;color:#111;font-size:1.05rem"></div>
             <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:8px">
               <div id="pmStars" class="stars-inline">★★★★★</div>
@@ -463,7 +468,7 @@
           <ul id="pmBenefits" style="margin:8px 0 0 16px;color:var(--muted-text)"></ul>
         </div>
 
-        <div id="pmPromo" class="promo" style="margin-top:10px">Promoción especial</div>
+        <div id="pmPromo" class="promo" style="margin-top:10px;display:none">Promoción especial</div>
 
         <!-- FORM / ORDER -->
         <div style="margin-top:12px">
@@ -566,7 +571,7 @@
             <div>contacto@hogarsmart.com</div>
             <div style="height:8px"></div>
             <div style="font-weight:700">WhatsApp</div>
-            <div>+57 300 000 0000</div>
+            <div>+57 32138231126</div>
             <div style="height:8px"></div>
             <div style="font-weight:700">Horario</div>
             <div>Lun - Vie 9:00 - 18:00</div>
@@ -591,57 +596,29 @@
   </div>
 
 <script>
-/* ---------- DATA: 16 Productos genéricos ---------- */
+/* ---------- DATA: 7 Productos reales (orden: ofertas primero) ---------- */
 const PRODUCTS = [
-  { id:'p1', title:'Escurridor Plegable 2 en 1', subtitle:'Plegable y fácil de guardar', price:'COP 39.900', images:[
-      'https://images.unsplash.com/photo-1580910051072-9f5bc4a0ad71?auto=format&fit=crop&w=800&q=60',
-      'https://images.unsplash.com/photo-1581579186044-3f3b96f6d8b6?auto=format&fit=crop&w=600&q=60'
-    ], benefits:['Ahorro de espacio','Material resistente','Secado rápido'], promo:'10% en 2+ unidades', rating:4.5, reviews:34 },
-  { id:'p2', title:'Mini Aspiradora Portátil', subtitle:'Compacta y potente', price:'COP 59.900', images:[
-      'https://images.unsplash.com/photo-1600180758890-3e1a9b2b64d7?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Ligera','USB recargable','Ideal para migas y pelos'], promo:'Envío gratis', rating:4.6, reviews:80 },
-  { id:'p3', title:'Dispensador Automático de Jabón', subtitle:'Sensor sin contacto', price:'COP 45.900', images:[
-      'https://images.unsplash.com/photo-1582719478177-2f78a52f6e2d?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Higiénico','Ahorra jabón','Fácil recarga'], promo:'Incluye baterías', rating:4.4, reviews:56 },
-  { id:'p4', title:'Organizador Multiusos para Cocina', subtitle:'Bandeja modular', price:'COP 29.900', images:[
-      'https://images.unsplash.com/photo-1581579186044-3f3b96f6d8b6?auto=format&fit=crop&w=600&q=60'
-    ], benefits:['Modular','Fácil limpieza','Material duradero'], promo:'Descuento 15% hoy', rating:4.3, reviews:21 },
-  { id:'p5', title:'Esterilla Antideslizante para Baño', subtitle:'Secado rápido', price:'COP 19.900', images:[
-      'https://images.unsplash.com/photo-1603988365739-68b39a9b7b9c?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Antibacterial','Seca rápido','Fácil transporte'], promo:'2x1 edición limitada', rating:4.2, reviews:12 },
-  { id:'p6', title:'Cortador Multifunción Cocina', subtitle:'Ahorra tiempo al cocinar', price:'COP 24.900', images:[
-      'https://images.unsplash.com/photo-1580910043586-9fa43dfc0f4f?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Varios cortes','Limpieza rápida','Compacto'], promo:'Incluye protector', rating:4.6, reviews:43 },
-  { id:'p7', title:'Cepillo Limpiador de Microfibra', subtitle:'Limpia sin rayar', price:'COP 14.900', images:[
-      'https://images.unsplash.com/photo-1582719478238-dc2b1f7b0b2a?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Absorbe bien','Ideal para vidrios','Fácil enjuague'], promo:'Pack ahorro 3', rating:4.1, reviews:9 },
-  { id:'p8', title:'Soporte para Celular (Manos libres)', subtitle:'Ajustable y estable', price:'COP 22.900', images:[
-      'https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Angulo ajustable','Ideal para recetas','Plegable'], promo:'Envío 24h', rating:4.7, reviews:101 },
-  { id:'p9', title:'Dispensador de Pasta Dental Automático', subtitle:'Higiénico y cómodo', price:'COP 18.900', images:[
-      'https://images.unsplash.com/photo-1599058917763-e8e0ff2ad2b0?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Sin desperdicio','Instalación sencilla'], promo:'Incluye accesorios', rating:4.0, reviews:7 },
-  { id:'p10', title:'Organizador de Closet Colgante', subtitle:'Maximiza espacio', price:'COP 34.900', images:[
-      'https://images.unsplash.com/photo-1556909210-3f1f5b6f1a0a?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Fácil colgar','Varios compartimentos'], promo:'Perfecto para ahorro de espacio', rating:4.3, reviews:22 },
-  { id:'p11', title:'Rodillo Masajeador Manual', subtitle:'Relaja músculos en casa', price:'COP 26.900', images:[
-      'https://images.unsplash.com/photo-1546484959-fd5f8b5b9a8c?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Alivio rápido','Portátil'], promo:'Ideal para post-entreno', rating:4.8, reviews:204 },
-  { id:'p12', title:'Mopa Giratoria Compacta', subtitle:'Limpieza sin esfuerzo', price:'COP 49.900', images:[
-      'https://images.unsplash.com/photo-1587019158656-0c6f2c3e0bfd?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Sistema giratorio','Fácil escurrido'], promo:'Incluye cabezales extra', rating:4.5, reviews:66 },
-  { id:'p13', title:'Termómetro Digital Cocina', subtitle:'Precisión y rapidez', price:'COP 12.900', images:[
-      'https://images.unsplash.com/photo-1601048492654-1f5f4f0d9a8c?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Lectura rápida','Compacto'], promo:'Perfecto para cocinar', rating:4.1, reviews:18 },
-  { id:'p14', title:'Cortina Organizador (Baño)', subtitle:'Impermeable y elegante', price:'COP 32.900', images:[
-      'https://images.unsplash.com/photo-1587914091009-1efc7f7b5f6b?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Fácil instalar','Material premium'], promo:'Variedad de colores', rating:4.0, reviews:10 },
-  { id:'p15', title:'Luz LED Portátil Recargable', subtitle:'Ideal para armarios y rincones', price:'COP 22.900', images:[
-      'https://images.unsplash.com/photo-1582719478376-583d6b2a6d58?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Batería larga','Montaje magnético'], promo:'Pack ahorro 2 unidades', rating:4.4, reviews:44 },
-  { id:'p16', title:'Set de Utensilios Plegables', subtitle:'Perfecto para viajes y camping', price:'COP 16.900', images:[
-      'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=800&q=60'
-    ], benefits:['Compacto','Material durable'], promo:'Ideal para llevar', rating:4.2, reviews:14 }
+  { id:'p1', slug:'maquina-boxeo', title:'Máquina de Boxeo Musical', subtitle:'Entrena reflejos con ritmo y diversión', price:'COP 99.900', priceNum:99900, oldPrice:'COP 125.000', images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1833423/1748412859IMG_0186.jpeg'
+    ], benefits:['Recargable por USB','Incluye par de guantes','Modo musical interactivo','Fácil instalación en pared'], promo:'¡Oferta limitada!', rating:4.5, reviews:34 },
+  { id:'p3', slug:'perchero-doble-organizador', title:'Perchero y Zapatero Doble Organizador', subtitle:'Organiza tu ropa y calzado con estilo y gran capacidad.', price:'COP 59.900', priceNum:59900, oldPrice:'COP 75.000', images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1835576/1748621066perchero.png'
+    ], benefits:['Ganchos superiores para accesorios','Capacidad hasta 20 pares','Estructura doble resistente','Fácil de armar'], promo:'Descuento especial', rating:4.4, reviews:21 },
+  { id:'p5', slug:'cepillo-limpieza-5en1', title:'Cepillo de Limpieza Inalámbrico 5 en 1', subtitle:'Limpieza profunda sin esfuerzo', price:'COP 44.900', priceNum:44900, oldPrice:'COP 59.900', images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/700560/1710005002Screenshot_1114.jpg'
+    ], benefits:['Motor potente para manchas difíciles','Recargable USB y resistente al agua (IPX6)','Incluye 3 cabezales intercambiables','Mango ergonómico'], promo:'Oferta por tiempo limitado', rating:4.6, reviews:80 },
+  { id:'p7', slug:'mini-batidora-2en1', title:'Mini Batidora y Picador Eléctrico 2 en 1', subtitle:'Pica, mezcla y cocina más rápido', price:'COP 44.900', priceNum:44900, oldPrice:'COP 60.000', images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/458969/169819239610000963_10422030_1459030.png'
+    ], benefits:['Función 2 en 1: pica y bate','Recargable por USB (1200 mAh)','Tres velocidades ajustables','Compacta y fácil de limpiar'], promo:'Oferta especial', rating:4.3, reviews:204 },
+  { id:'p2', slug:'perchero-boutique-zapatero', title:'Perchero de Boutique con Zapatero', subtitle:'Diseño moderno con doble nivel para ropa y calzado.', price:'COP 54.900', priceNum:54900, images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/734977/1711514172PERCHERO%201.JPG'
+    ], benefits:['Estructura de hierro resistente','Fácil de armar','Espacio inferior para zapatos','Acabado brillante tipo boutique'], promo:'', rating:4.2, reviews:101 },
+  { id:'p6', slug:'bascula-bluetooth', title:'Báscula Inteligente con Bluetooth', subtitle:'Analiza tu cuerpo y controla tu progreso desde el celular.', price:'COP 34.900', priceNum:34900, images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1930136/1758208266BASCULA%20BLUETOOTH%208.jpg'
+    ], benefits:['Sincronización con app móvil','Mide peso, grasa, IMC y más','Alta precisión','Multiusuario y diseño en vidrio templado'], promo:'', rating:4.4, reviews:66 },
+  { id:'p4', slug:'alfombra-esponjosa', title:'Alfombra Esponjosa Premium', subtitle:'Textura suave, diseño moderno y el confort que tu hogar merece.', price:'COP 39.900', priceNum:39900, images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1859067/1750533557Captura%20de%20pantalla%202025-06-21%20135509.jpg'
+    ], benefits:['Material premium y duradero','Textura ultra suave','Antideslizante y fácil de limpiar','Ideal para sala o dormitorio'], promo:'', rating:4.3, reviews:44 }
 ];
 
 /* ---------- Element references ---------- */
@@ -671,6 +648,8 @@ const pmForm = document.getElementById('pmForm');
 const pmMsg = document.getElementById('pmMsg');
 const pmRateBtn = document.getElementById('pmRateBtn');
 
+const pmOldPrice = document.getElementById('pmOldPrice');
+
 const ratingPopup = document.getElementById('ratingPopup');
 const rateBtns = document.querySelectorAll('.rate-btn');
 const sendRatingBtn = document.getElementById('sendRating');
@@ -696,9 +675,9 @@ function renderStars(value){
   return html;
 }
 
-/* ---------- Populate top products (3) and featured (4) and catalog (16) ---------- */
+/* ---------- Populate top products (3) and featured (4) and catalog (ordered: offers first) ---------- */
 function populateListings(){
-  // top: first 3
+  // top: first 3 (use first three products)
   const topIds = [0,1,2];
   topProductsList.innerHTML = '';
   topIds.forEach(i=>{
@@ -712,11 +691,13 @@ function populateListings(){
 
   // featured (first 4)
   productsFeatured.innerHTML = '';
-  for(let i=0;i<4;i++){
+  for(let i=0;i<4 && i<PRODUCTS.length;i++){
     const p = PRODUCTS[i];
     const card = document.createElement('article');
     card.className = 'product-card';
     card.setAttribute('data-index', i);
+    const oldHtml = p.oldPrice ? `<div style="display:flex;align-items:center"><div class="old-price">${p.oldPrice}</div><div class="price">${p.price}</div></div>` : `<div class="price">${p.price}</div>`;
+    const badge = p.promo ? `<div class="offer-badge">Oferta</div>` : '';
     card.innerHTML = `
       <div class="product-thumb"><img src="${p.images[0]}" alt="${p.title}"></div>
       <div class="product-meta">
@@ -724,7 +705,10 @@ function populateListings(){
         <p class="product-desc">${p.benefits[0]}</p>
       </div>
       <div class="product-row">
-        <div class="price">${p.price}</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${oldHtml}
+          ${badge}
+        </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-ghost view-btn" data-index="${i}">Ver</button>
           <button class="btn btn-primary buy-btn" data-index="${i}">Comprar</button>
@@ -734,12 +718,14 @@ function populateListings(){
     productsFeatured.appendChild(card);
   }
 
-  // catalog (16)
+  // catalog (all products)
   catalogGrid.innerHTML = '';
   PRODUCTS.forEach((p, idx)=>{
     const card = document.createElement('article');
     card.className = 'product-card';
     card.setAttribute('data-index', idx);
+    const oldHtml = p.oldPrice ? `<div style="display:flex;flex-direction:column"><div class="old-price">${p.oldPrice}</div><div class="price">${p.price}</div></div>` : `<div class="price">${p.price}</div>`;
+    const badge = p.promo ? `<div class="offer-badge">${p.promo ? 'Oferta' : ''}</div>` : '';
     card.innerHTML = `
       <div class="product-thumb"><img src="${p.images[0]}" alt="${p.title}"></div>
       <div class="product-meta">
@@ -748,7 +734,7 @@ function populateListings(){
       </div>
       <div class="product-row">
         <div style="display:flex;flex-direction:column">
-          <div class="price">${p.price}</div>
+          ${oldHtml}
           <div style="color:var(--muted-text);font-size:12px">${p.rating.toFixed(1)} (${p.reviews})</div>
         </div>
         <div style="display:flex;gap:8px">
@@ -779,10 +765,19 @@ function openProductModalByIndex(index){
   pmTitle.textContent = p.title;
   pmSub.textContent = p.subtitle;
   pmPrice.textContent = p.price;
-  pmPromo.textContent = p.promo || '';
   pmBenefits.innerHTML = p.benefits.map(b=>`<li>${b}</li>`).join('');
   pmStars.textContent = renderStars(p.rating);
   pmRatingNum.textContent = `${p.rating.toFixed(1)} (${p.reviews})`;
+
+  if(p.oldPrice){
+    pmOldPrice.style.display = 'block';
+    pmOldPrice.textContent = p.oldPrice;
+    pmPromo.style.display = 'block';
+    pmPromo.textContent = p.promo || 'Promoción especial';
+  } else {
+    pmOldPrice.style.display = 'none';
+    pmPromo.style.display = 'none';
+  }
 
   // show overlay & modal and blur content
   overlay.classList.add('show');
@@ -868,7 +863,7 @@ document.addEventListener('click', (e)=>{
   }
 });
 
-/* ---------- Form submit (simulate order) ---------- */
+/* ---------- Form submit (redirect to WhatsApp with prefilled message) ---------- */
 pmForm.addEventListener('submit', (e)=>{
   e.preventDefault();
   const fd = new FormData(pmForm);
@@ -878,17 +873,34 @@ pmForm.addEventListener('submit', (e)=>{
     pmMsg.textContent = 'Por favor completa los campos obligatorios.';
     return;
   }
-  // simulate order
+  // build message and redirect to WhatsApp (your business number)
+  const name = encodeURIComponent(fd.get('name'));
+  const phone = encodeURIComponent(fd.get('phone'));
+  const city = encodeURIComponent(fd.get('city'));
+  const address = encodeURIComponent(fd.get('address') || '');
+  const payMethod = encodeURIComponent(fd.get('payMethod') || 'contraentrega');
+
+  const product = PRODUCTS[currentProduct];
+  const productName = encodeURIComponent(product ? product.title : 'Pedido HogarSmart');
+  const productPrice = encodeURIComponent(product ? product.price : '');
+
+  const msg = encodeURIComponent(`👋 Hola, soy ${decodeURIComponent(name)}. He realizado un pedido en HogarSmart.%0AProducto: ${decodeURIComponent(productName)}%0APrecio: ${decodeURIComponent(productPrice)}%0ACiudad: ${decodeURIComponent(city)}%0ADirección: ${decodeURIComponent(address)}%0AMétodo de pago: ${decodeURIComponent(payMethod)}%0ATeléfono: ${decodeURIComponent(phone)}`);
+
+  const waNumber = '5732138231126'; // tu número con código de país
+  const waLink = `https://wa.me/${waNumber}?text=${msg}`;
+
+  // open wa in new tab (or same)
+  window.open(waLink,'_blank');
+
   pmMsg.style.display = 'block';
   pmMsg.style.color = 'green';
-  pmMsg.textContent = '✅ Gracias por tu pedido. Te contactaremos por WhatsApp en breve.';
-  pmForm.reset();
+  pmMsg.textContent = '✅ Redirigiendo a WhatsApp para confirmar tu pedido...';
 
-  // auto close modal after small delay
+  // keep modal open or close after small delay
   setTimeout(()=> {
     closeProductModalFn();
-    showToast('Pedido recibido. Pronto te contactamos.');
-  }, 1500);
+    showToast('Pedido recibido. Te contactaremos por WhatsApp.');
+  }, 1200);
 });
 
 /* ---------- Rating popup logic ---------- */
@@ -972,7 +984,7 @@ function showToast(text){
   toastTimer = setTimeout(()=> toast.classList.remove('show'), 3000);
 }
 
-/* ---------- Init populate and animation ---------- */
+/* ---------- Init populate and animation + URL param product open ---------- */
 document.addEventListener('DOMContentLoaded', ()=>{
   populateListings();
 
@@ -985,6 +997,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   // ensure featured and top clickable buttons wired (if dynamic)
   document.querySelectorAll('.view-btn, .buy-btn').forEach(b => b.addEventListener('click', e => e.stopPropagation()));
+
+  // check URL for ?producto=slug or id to auto-open product modal
+  const params = new URLSearchParams(window.location.search);
+  const prodParam = params.get('producto') || params.get('product') || params.get('p');
+  if(prodParam){
+    // try find by id or slug
+    const idx = PRODUCTS.findIndex(p => p.id === prodParam || p.slug === prodParam);
+    if(idx !== -1) {
+      // small delay to let layout render then open modal
+      setTimeout(()=> openProductModalByIndex(idx), 300);
+    }
+  }
 });
 
 /* ---------- Accessibility: ESC to close modals/panels/pages ---------- */
