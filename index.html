@@ -121,10 +121,6 @@
 
     .price{font-weight:800;color:#111}
 
-    .old-price{font-weight:700;color:var(--muted-text);text-decoration:line-through;font-size:0.9rem;margin-right:8px;color:#b94a48}
-
-    .offer-badge{background:linear-gradient(90deg,#ffcf6a,#f6bf2a);padding:6px 8px;border-radius:8px;font-weight:800;color:#3a2b00;font-size:12px}
-
     /* ---------- PRODUCT MODAL (center) ---------- */
     .overlay-modal{
       position:fixed;inset:0;background:rgba(0,0,0,0.28);backdrop-filter:blur(4px);opacity:0;visibility:hidden;transition:opacity .22s,z-index 0s;z-index:1400;
@@ -144,6 +140,13 @@
     .modal-right{display:flex;flex-direction:column;gap:10px;padding:6px}
     .promo{background:linear-gradient(90deg,var(--accent),var(--accent-dark));padding:8px;border-radius:8px;color:#3a2b00;font-weight:700}
 
+    /* pre-form notice */
+    .pre-note{
+      background:linear-gradient(180deg, rgba(246,200,95,0.12), rgba(228,184,75,0.06));
+      border:1px solid rgba(228,184,75,0.12);
+      padding:10px;border-radius:8px;color: #3a2b00;font-weight:700;font-size:0.95rem;
+    }
+
     /* mini order form */
     .mini-form{display:flex;flex-direction:column;gap:8px;margin-top:8px}
     .mini-form input,.mini-form textarea,.mini-form select{padding:10px;border-radius:10px;border:1px solid #eee}
@@ -157,7 +160,13 @@
     .stars-inline{display:flex;gap:6px;font-size:20px;color:#f5c518}
     .rating-badge{font-weight:700;color:var(--text);margin-left:8px}
 
-    /* thank you toast */
+    /* top notification */
+    #topNotif{
+      position:fixed;left:50%;transform:translateX(-50%);top:18px;background:#111;color:#fff;padding:10px 16px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,0.16);opacity:0;visibility:hidden;transition:opacity .22s;z-index:9999;font-weight:700;font-size:0.95rem;
+    }
+    #topNotif.show{opacity:1;visibility:visible}
+
+    /* thank you toast (bottom) */
     .toast{
       position:fixed;left:50%;transform:translateX(-50%);bottom:28px;background:#111;color:#fff;padding:12px 18px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,0.2);opacity:0;visibility:hidden;transition:opacity .25s;
       z-index:1600;
@@ -200,7 +209,7 @@
     .contact-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
     .contact-card{background:var(--surface);padding:18px;border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,0.06);display:grid;grid-template-columns:1fr 420px;gap:16px}
     .contact-left p{color:var(--muted-text)}
-    .map-frame{width:100%;height:320px;border-radius:10px;border:1px solid var(--muted-2);overflow:hidden}
+    .map-frame{width:100%;Height:320px;border-radius:10px;border:1px solid var(--muted-2);overflow:hidden}
     .contact-form input,.contact-form textarea,.contact-form select{width:100%;padding:10px;border-radius:8px;border:1px solid #eee}
     .contact-actions{display:flex;gap:10px;align-items:center;margin-top:10px}
     .contact-back{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:8px 12px;border-radius:8px;cursor:pointer}
@@ -233,6 +242,9 @@
   </style>
 </head>
 <body>
+
+  <!-- TOP NOTIFICATION -->
+  <div id="topNotif" role="status" aria-live="polite"></div>
 
   <!-- HEADER -->
   <header>
@@ -416,7 +428,7 @@
 
           <div style="min-width:260px">
             <div style="font-weight:700">WhatsApp</div>
-            <div style="color:var(--muted-text)">+57 32138231126</div>
+            <div style="color:var(--muted-text)">+57 321 382 3126</div>
             <div style="height:8px"></div>
             <div style="color:var(--muted-text)">Horario: Lun - Vie 9:00 - 18:00</div>
           </div>
@@ -454,7 +466,6 @@
           </div>
 
           <div style="text-align:right">
-            <div id="pmOldPrice" class="old-price" style="display:none"></div>
             <div id="pmPrice" style="font-weight:900;color:#111;font-size:1.05rem"></div>
             <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:8px">
               <div id="pmStars" class="stars-inline">★★★★★</div>
@@ -468,21 +479,33 @@
           <ul id="pmBenefits" style="margin:8px 0 0 16px;color:var(--muted-text)"></ul>
         </div>
 
-        <div id="pmPromo" class="promo" style="margin-top:10px;display:none">Promoción especial</div>
+        <div id="pmPromo" class="promo" style="margin-top:10px">Promoción especial</div>
+
+        <!-- PRE-FORM NOTICE -->
+        <div class="pre-note" style="margin-top:12px">
+          En cuanto termines el formulario serás redirigido con uno de nuestros asesores para terminar de confirmar tu pedido.
+        </div>
 
         <!-- FORM / ORDER -->
         <div style="margin-top:12px">
           <div style="font-weight:800;margin-bottom:8px">Realizar pedido</div>
-          <form id="pmForm" class="mini-form" autocomplete="off">
-            <input name="name" type="text" placeholder="Tu nombre" required>
-            <input name="phone" type="tel" placeholder="WhatsApp (ej. 3001234567)" required>
-            <select name="city" required>
+          <form id="pmForm" class="mini-form" autocomplete="off" spellcheck="false">
+            <!-- Honeypot (hidden) para bots -->
+            <div style="display:none">
+              <label>Website <input name="website" type="text" autocomplete="off"></label>
+            </div>
+
+            <input name="name" id="pm_name" type="text" placeholder="Tu nombre" required>
+            <input name="phone" id="pm_phone" type="tel" placeholder="WhatsApp (ej. 3001234567)" pattern="\\d{7,15}" title="Ingresa solo números, 7 a 15 dígitos" required>
+            <select name="city" id="pm_city" required>
               <option value="">Selecciona ciudad</option>
               <option>Bogotá</option>
               <option>Medellín</option>
               <option>Cali</option>
               <option>Otra</option>
             </select>
+
+            <textarea name="address" id="pm_address" rows="2" placeholder="Dirección (calle, barrio, referencia) — obligatorio" required></textarea>
 
             <div class="pay-options" style="margin-top:6px">
               <label><input type="radio" name="payMethod" value="contraentrega" checked style="margin-right:6px">Pago contraentrega</label>
@@ -491,7 +514,9 @@
               <label><input type="radio" name="payMethod" value="tarjeta" style="margin-right:6px">Tarjeta</label>
             </div>
 
-            <textarea name="address" rows="2" placeholder="Dirección (si aplica)"></textarea>
+            <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+              <label style="font-weight:600"><input type="checkbox" name="confirmReal" id="pm_confirmReal" required style="margin-right:8px"> Confirmo que mi pedido es real y los datos son correctos</label>
+            </div>
 
             <div style="display:flex;gap:8px;margin-top:8px">
               <button type="submit" class="btn btn-primary">Enviar pedido</button>
@@ -571,7 +596,7 @@
             <div>contacto@hogarsmart.com</div>
             <div style="height:8px"></div>
             <div style="font-weight:700">WhatsApp</div>
-            <div>+57 32138231126</div>
+            <div>+57 321 382 3126</div>
             <div style="height:8px"></div>
             <div style="font-weight:700">Horario</div>
             <div>Lun - Vie 9:00 - 18:00</div>
@@ -596,29 +621,32 @@
   </div>
 
 <script>
-/* ---------- DATA: 7 Productos reales (orden: ofertas primero) ---------- */
+/* ---------- DATA: 7 Productos reales (tus productos seleccionados) ---------- */
 const PRODUCTS = [
-  { id:'p1', slug:'maquina-boxeo', title:'Máquina de Boxeo Musical', subtitle:'Entrena reflejos con ritmo y diversión', price:'COP 99.900', priceNum:99900, oldPrice:'COP 125.000', images:[
+  { id:'maquina-boxeo', title:'Máquina Boxeo', subtitle:'Caja musical + guantes + adhesivos', price:'COP 100.000', oldPrice:'COP 125.000', images:[
       'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1833423/1748412859IMG_0186.jpeg'
-    ], benefits:['Recargable por USB','Incluye par de guantes','Modo musical interactivo','Fácil instalación en pared'], promo:'¡Oferta limitada!', rating:4.5, reviews:34 },
-  { id:'p3', slug:'perchero-doble-organizador', title:'Perchero y Zapatero Doble Organizador', subtitle:'Organiza tu ropa y calzado con estilo y gran capacidad.', price:'COP 59.900', priceNum:59900, oldPrice:'COP 75.000', images:[
-      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1835576/1748621066perchero.png'
-    ], benefits:['Ganchos superiores para accesorios','Capacidad hasta 20 pares','Estructura doble resistente','Fácil de armar'], promo:'Descuento especial', rating:4.4, reviews:21 },
-  { id:'p5', slug:'cepillo-limpieza-5en1', title:'Cepillo de Limpieza Inalámbrico 5 en 1', subtitle:'Limpieza profunda sin esfuerzo', price:'COP 44.900', priceNum:44900, oldPrice:'COP 59.900', images:[
-      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/700560/1710005002Screenshot_1114.jpg'
-    ], benefits:['Motor potente para manchas difíciles','Recargable USB y resistente al agua (IPX6)','Incluye 3 cabezales intercambiables','Mango ergonómico'], promo:'Oferta por tiempo limitado', rating:4.6, reviews:80 },
-  { id:'p7', slug:'mini-batidora-2en1', title:'Mini Batidora y Picador Eléctrico 2 en 1', subtitle:'Pica, mezcla y cocina más rápido', price:'COP 44.900', priceNum:44900, oldPrice:'COP 60.000', images:[
-      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/458969/169819239610000963_10422030_1459030.png'
-    ], benefits:['Función 2 en 1: pica y bate','Recargable por USB (1200 mAh)','Tres velocidades ajustables','Compacta y fácil de limpiar'], promo:'Oferta especial', rating:4.3, reviews:204 },
-  { id:'p2', slug:'perchero-boutique-zapatero', title:'Perchero de Boutique con Zapatero', subtitle:'Diseño moderno con doble nivel para ropa y calzado.', price:'COP 54.900', priceNum:54900, images:[
+    ], benefits:['Recargable','Incluye guantes','Fácil instalación'], promo:'Oferta', rating:4.5, reviews:34 },
+  { id:'perchero-boutique', title:'Perchero Boutique con Zapatero', subtitle:'Estilo y organización', price:'COP 55.000', images:[
       'https://d39ru7awumhhs2.cloudfront.net/colombia/products/734977/1711514172PERCHERO%201.JPG'
-    ], benefits:['Estructura de hierro resistente','Fácil de armar','Espacio inferior para zapatos','Acabado brillante tipo boutique'], promo:'', rating:4.2, reviews:101 },
-  { id:'p6', slug:'bascula-bluetooth', title:'Báscula Inteligente con Bluetooth', subtitle:'Analiza tu cuerpo y controla tu progreso desde el celular.', price:'COP 34.900', priceNum:34900, images:[
-      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1930136/1758208266BASCULA%20BLUETOOTH%208.jpg'
-    ], benefits:['Sincronización con app móvil','Mide peso, grasa, IMC y más','Alta precisión','Multiusuario y diseño en vidrio templado'], promo:'', rating:4.4, reviews:66 },
-  { id:'p4', slug:'alfombra-esponjosa', title:'Alfombra Esponjosa Premium', subtitle:'Textura suave, diseño moderno y el confort que tu hogar merece.', price:'COP 39.900', priceNum:39900, images:[
+    ], benefits:['Fácil montaje','Ahorra espacio'], promo:'', rating:4.3, reviews:21 },
+  { id:'perchero-doble', title:'Perchero y Zapatero Organizador Doble', subtitle:'Gran capacidad (hasta 20 pares)', price:'COP 60.000', images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1835576/1748621066perchero.png'
+    ], benefits:['5 niveles','Ganchos incorporados'], promo:'', rating:4.4, reviews:45 },
+  { id:'organizador-bano', title:'Organización de Baño 5pcs', subtitle:'Set modular para ducha', price:'COP 50.000', images:[
       'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1859067/1750533557Captura%20de%20pantalla%202025-06-21%20135509.jpg'
-    ], benefits:['Material premium y duradero','Textura ultra suave','Antideslizante y fácil de limpiar','Ideal para sala o dormitorio'], promo:'', rating:4.3, reviews:44 }
+    ], benefits:['Soporte jabón','8 ganchos'], promo:'', rating:4.2, reviews:12 },
+  { id:'alfombra-esponjosa', title:'Alfombra Esponjosa Premium', subtitle:'Textura ultra suave', price:'COP 40.000', images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1859067/1750533557Captura%20de%20pantalla%202025-06-21%20135509.jpg'
+    ], benefits:['Antideslizante','Fácil limpieza'], promo:'', rating:4.3, reviews:18 },
+  { id:'cepillo-limpieza', title:'Cepillo Limpieza Hogar Inalámbrico 5en1', subtitle:'Recargable USB, IPX6', price:'COP 45.000', images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/700560/1710005002Screenshot_1114.jpg'
+    ], benefits:['Varios cabezales','Ergonómico'], promo:'Oferta (Antes COP 60.000)', oldPrice:'COP 60.000', rating:4.6, reviews:80 },
+  { id:'bascula-inteligente', title:'Báscula Inteligente Bluetooth', subtitle:'Análisis corporal y app', price:'COP 35.000', images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/1930136/1758208266BASCULA%20BLUETOOTH%208.jpg'
+    ], benefits:['Sincroniza con app','Multiusuario'], promo:'', rating:4.5, reviews:66 },
+  { id:'mini-batidora', title:'Mini Batidora Picador Eléctrico 2 en 1', subtitle:'Inalámbrica, 3 velocidades', price:'COP 45.000', images:[
+      'https://d39ru7awumhhs2.cloudfront.net/colombia/products/458969/169819239610000963_10422030_1459030.png'
+    ], benefits:['Carga USB','Motor 20W'], promo:'', rating:4.4, reviews:44 }
 ];
 
 /* ---------- Element references ---------- */
@@ -648,7 +676,7 @@ const pmForm = document.getElementById('pmForm');
 const pmMsg = document.getElementById('pmMsg');
 const pmRateBtn = document.getElementById('pmRateBtn');
 
-const pmOldPrice = document.getElementById('pmOldPrice');
+const topNotif = document.getElementById('topNotif');
 
 const ratingPopup = document.getElementById('ratingPopup');
 const rateBtns = document.querySelectorAll('.rate-btn');
@@ -675,57 +703,63 @@ function renderStars(value){
   return html;
 }
 
-/* ---------- Populate top products (3) and featured (4) and catalog (ordered: offers first) ---------- */
+/* ---------- Populate top products (3) and featured (4) and catalog ---------- */
 function populateListings(){
-  // top: first 3 (use first three products)
-  const topIds = [0,1,2];
+  // Put products with promo first
+  const sorted = [...PRODUCTS].sort((a,b)=>{
+    const pa = a.promo ? 0 : 1;
+    const pb = b.promo ? 0 : 1;
+    return pa - pb;
+  });
+
+  // top: first 3
+  const top = sorted.slice(0,3);
   topProductsList.innerHTML = '';
-  topIds.forEach(i=>{
-    const p = PRODUCTS[i];
+  top.forEach((p,i=>{
     const div = document.createElement('div');
     div.className = 'top-item';
     div.innerHTML = `<img src="${p.images[0]}" alt=""><div><div style="font-weight:700;color:#111">${p.title}</div><div style="color:var(--muted-text)">${p.price}</div></div>`;
-    div.addEventListener('click', ()=> openProductModalByIndex(i));
+    div.addEventListener('click', ()=> openProductModalById(p.id));
     topProductsList.appendChild(div);
-  });
+  }));
 
   // featured (first 4)
   productsFeatured.innerHTML = '';
-  for(let i=0;i<4 && i<PRODUCTS.length;i++){
-    const p = PRODUCTS[i];
+  for(let i=0;i<4;i++){
+    const p = sorted[i] || PRODUCTS[i];
+    if(!p) continue;
     const card = document.createElement('article');
     card.className = 'product-card';
-    card.setAttribute('data-index', i);
-    const oldHtml = p.oldPrice ? `<div style="display:flex;align-items:center"><div class="old-price">${p.oldPrice}</div><div class="price">${p.price}</div></div>` : `<div class="price">${p.price}</div>`;
-    const badge = p.promo ? `<div class="offer-badge">Oferta</div>` : '';
+    card.setAttribute('data-id', p.id);
+    // show old price if exists and promo badge
+    const priceHtml = p.oldPrice ? `<div style="display:flex;flex-direction:column;align-items:flex-end"><div style="text-decoration:line-through;color:var(--muted-text);font-size:0.9rem">${p.oldPrice}</div><div class="price">${p.price}</div></div>` : `<div class="price">${p.price}</div>`;
+    const badge = p.promo ? `<div style="background:var(--accent);padding:6px 8px;border-radius:8px;font-weight:800;color:#3a2b00">${p.promo}</div>` : '';
     card.innerHTML = `
       <div class="product-thumb"><img src="${p.images[0]}" alt="${p.title}"></div>
       <div class="product-meta">
         <h3 class="product-title">${p.title} <span style="font-size:12px;color:var(--muted-text);font-weight:600"> · ${p.subtitle}</span></h3>
-        <p class="product-desc">${p.benefits[0]}</p>
+        <p class="product-desc">${p.benefits[0] || ''}</p>
       </div>
       <div class="product-row">
-        <div style="display:flex;flex-direction:column;gap:6px">
-          ${oldHtml}
+        ${priceHtml}
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
           ${badge}
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost view-btn" data-index="${i}">Ver</button>
-          <button class="btn btn-primary buy-btn" data-index="${i}">Comprar</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost view-btn" data-id="${p.id}">Ver</button>
+            <button class="btn btn-primary buy-btn" data-id="${p.id}">Comprar</button>
+          </div>
         </div>
       </div>
     `;
     productsFeatured.appendChild(card);
   }
 
-  // catalog (all products)
+  // catalog (all)
   catalogGrid.innerHTML = '';
   PRODUCTS.forEach((p, idx)=>{
     const card = document.createElement('article');
     card.className = 'product-card';
-    card.setAttribute('data-index', idx);
-    const oldHtml = p.oldPrice ? `<div style="display:flex;flex-direction:column"><div class="old-price">${p.oldPrice}</div><div class="price">${p.price}</div></div>` : `<div class="price">${p.price}</div>`;
-    const badge = p.promo ? `<div class="offer-badge">${p.promo ? 'Oferta' : ''}</div>` : '';
+    card.setAttribute('data-id', p.id);
     card.innerHTML = `
       <div class="product-thumb"><img src="${p.images[0]}" alt="${p.title}"></div>
       <div class="product-meta">
@@ -734,12 +768,12 @@ function populateListings(){
       </div>
       <div class="product-row">
         <div style="display:flex;flex-direction:column">
-          ${oldHtml}
+          <div class="price">${p.price}</div>
           <div style="color:var(--muted-text);font-size:12px">${p.rating.toFixed(1)} (${p.reviews})</div>
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost view-btn" data-index="${idx}">Ver</button>
-          <button class="btn btn-primary buy-btn" data-index="${idx}">Comprar</button>
+          <button class="btn btn-ghost view-btn" data-id="${p.id}">Ver</button>
+          <button class="btn btn-primary buy-btn" data-id="${p.id}">Comprar</button>
         </div>
       </div>
     `;
@@ -747,11 +781,11 @@ function populateListings(){
   });
 }
 
-/* ---------- Open product modal by index ---------- */
-function openProductModalByIndex(index){
-  const p = PRODUCTS[index];
+/* ---------- Open product modal by id ---------- */
+function openProductModalById(id){
+  const p = PRODUCTS.find(x=>x.id === id);
   if(!p) return;
-  currentProduct = index;
+  currentProduct = p.id;
 
   pmImage.src = p.images[0];
   pmThumbs.innerHTML = '';
@@ -764,20 +798,16 @@ function openProductModalByIndex(index){
 
   pmTitle.textContent = p.title;
   pmSub.textContent = p.subtitle;
-  pmPrice.textContent = p.price;
-  pmBenefits.innerHTML = p.benefits.map(b=>`<li>${b}</li>`).join('');
-  pmStars.textContent = renderStars(p.rating);
-  pmRatingNum.textContent = `${p.rating.toFixed(1)} (${p.reviews})`;
-
+  // show old price if exists
   if(p.oldPrice){
-    pmOldPrice.style.display = 'block';
-    pmOldPrice.textContent = p.oldPrice;
-    pmPromo.style.display = 'block';
-    pmPromo.textContent = p.promo || 'Promoción especial';
+    pmPrice.innerHTML = `<div style="text-decoration:line-through;color:var(--muted-text);font-size:0.95rem">${p.oldPrice}</div><div style="font-weight:900;color:#111;font-size:1.05rem">${p.price}</div>`;
   } else {
-    pmOldPrice.style.display = 'none';
-    pmPromo.style.display = 'none';
+    pmPrice.textContent = p.price;
   }
+  pmPromo.textContent = p.promo || '';
+  pmBenefits.innerHTML = (p.benefits || []).map(b=>`<li>${b}</li>`).join('');
+  pmStars.textContent = renderStars(p.rating || 5);
+  pmRatingNum.textContent = p.reviews ? `${p.rating.toFixed(1)} (${p.reviews})` : '';
 
   // show overlay & modal and blur content
   overlay.classList.add('show');
@@ -852,56 +882,93 @@ closeProductModal.addEventListener('click', closeProductModalFn);
 /* ---------- Delegate click on view / buy buttons (for featured & catalog) ---------- */
 document.addEventListener('click', (e)=>{
   const v = e.target.closest('.view-btn');
-  if(v){ const idx = Number(v.dataset.index); openProductModalByIndex(idx); return; }
+  if(v){ const id = v.dataset.id; openProductModalById(id); return; }
   const b = e.target.closest('.buy-btn');
-  if(b){ const idx = Number(b.dataset.index); openProductModalByIndex(idx); setTimeout(()=> document.querySelector('#pmForm input[name="name"]').focus(),250); return; }
+  if(b){ const id = b.dataset.id; openProductModalById(id); setTimeout(()=> document.querySelector('#pmForm input[name="name"]').focus(),250); return; }
   // card click (open)
   const card = e.target.closest('.product-card');
   if(card && !e.target.closest('button')) {
-    const idx = Number(card.getAttribute('data-index'));
-    if(!Number.isNaN(idx)) openProductModalByIndex(idx);
+    const id = card.getAttribute('data-id');
+    if(id) openProductModalById(id);
   }
 });
 
-/* ---------- Form submit (redirect to WhatsApp with prefilled message) ---------- */
+/* ---------- Form submit (validate + redirect to WhatsApp) ---------- */
 pmForm.addEventListener('submit', (e)=>{
   e.preventDefault();
-  const fd = new FormData(pmForm);
-  if(!fd.get('name') || !fd.get('phone')){
+
+  // honeypot check
+  const hp = pmForm.querySelector('input[name="website"]');
+  if(hp && hp.value){
+    // probable bot - silently fail
     pmMsg.style.display = 'block';
     pmMsg.style.color = 'crimson';
-    pmMsg.textContent = 'Por favor completa los campos obligatorios.';
+    pmMsg.textContent = 'Error en el envío. Intenta de nuevo.';
     return;
   }
-  // build message and redirect to WhatsApp (your business number)
-  const name = encodeURIComponent(fd.get('name'));
-  const phone = encodeURIComponent(fd.get('phone'));
-  const city = encodeURIComponent(fd.get('city'));
-  const address = encodeURIComponent(fd.get('address') || '');
-  const payMethod = encodeURIComponent(fd.get('payMethod') || 'contraentrega');
 
-  const product = PRODUCTS[currentProduct];
-  const productName = encodeURIComponent(product ? product.title : 'Pedido HogarSmart');
-  const productPrice = encodeURIComponent(product ? product.price : '');
+  const name = (document.getElementById('pm_name')||{}).value && (document.getElementById('pm_name')||{}).value.trim();
+  const phone = (document.getElementById('pm_phone')||{}).value && (document.getElementById('pm_phone')||{}).value.trim();
+  const city = (document.getElementById('pm_city')||{}).value;
+  const address = (document.getElementById('pm_address')||{}).value && (document.getElementById('pm_address')||{}).value.trim();
+  const confirmReal = (document.getElementById('pm_confirmReal')||{}).checked;
 
-  const msg = encodeURIComponent(`👋 Hola, soy ${decodeURIComponent(name)}. He realizado un pedido en HogarSmart.%0AProducto: ${decodeURIComponent(productName)}%0APrecio: ${decodeURIComponent(productPrice)}%0ACiudad: ${decodeURIComponent(city)}%0ADirección: ${decodeURIComponent(address)}%0AMétodo de pago: ${decodeURIComponent(payMethod)}%0ATeléfono: ${decodeURIComponent(phone)}`);
+  // basic validation
+  if(!name || !phone || !city || !address || !confirmReal){
+    pmMsg.style.display = 'block';
+    pmMsg.style.color = 'crimson';
+    pmMsg.textContent = 'Por favor completa todos los campos obligatorios y confirma que tu pedido es real.';
+    return;
+  }
 
-  const waNumber = '5732138231126'; // tu número con código de país
-  const waLink = `https://wa.me/${waNumber}?text=${msg}`;
+  // phone digits only check
+  const digits = phone.replace(/\D/g,'');
+  if(!(digits.length >= 7 && digits.length <= 15)){
+    pmMsg.style.display = 'block';
+    pmMsg.style.color = 'crimson';
+    pmMsg.textContent = 'Por favor ingresa un número de teléfono válido (solo números).';
+    return;
+  }
 
-  // open wa in new tab (or same)
-  window.open(waLink,'_blank');
+  // retrieve product title safely
+  const prodTitle = pmTitle.textContent || 'Producto';
 
-  pmMsg.style.display = 'block';
-  pmMsg.style.color = 'green';
-  pmMsg.textContent = '✅ Redirigiendo a WhatsApp para confirmar tu pedido...';
+  // show top notification
+  showTopNotif('✅ Tu pedido ha sido enviado correctamente. En breve serás redirigido a nuestro WhatsApp para confirmar tu pedido.');
 
-  // keep modal open or close after small delay
-  setTimeout(()=> {
-    closeProductModalFn();
-    showToast('Pedido recibido. Te contactaremos por WhatsApp.');
-  }, 1200);
+  // prepare whatsapp message and link
+  const businessNumber = '573213823126'; // +57 3213823126 -> 57 + 3213823126
+  const message = `👋 Hola, soy ${name}.%0AQuiero pedir el producto *${prodTitle}* con envío *contraentrega* a:%0A📍 ${address} — ${city}%0ATel: ${digits}`;
+  const waLink = `https://wa.me/${businessNumber}?text=${encodeURIComponent(message)}`;
+
+  // small delay so user sees notification, then redirect/open WA
+  setTimeout(()=>{
+    // open in new tab if possible, otherwise navigate
+    try{
+      window.open(waLink, '_blank');
+      // On mobile, also set location (some browsers require)
+      setTimeout(()=> { window.location.href = waLink; }, 600);
+    }catch(err){
+      window.location.href = waLink;
+    }
+    // reset form UI
+    pmForm.reset();
+    pmMsg.style.display = 'none';
+    // close modal after redirect attempt
+    setTimeout(()=> {
+      closeProductModalFn();
+    }, 800);
+  }, 2500);
 });
+
+/* ---------- Top notification helper ---------- */
+let topTimer = null;
+function showTopNotif(text){
+  topNotif.textContent = text;
+  topNotif.classList.add('show');
+  if(topTimer) clearTimeout(topTimer);
+  topTimer = setTimeout(()=> topNotif.classList.remove('show'), 6000);
+}
 
 /* ---------- Rating popup logic ---------- */
 function openRatingPopup(){
@@ -931,9 +998,10 @@ cancelRatingBtn.addEventListener('click', closeRatingPopup);
 
 sendRatingBtn.addEventListener('click', ()=>{
   if(currentProduct === null) return;
-  const prod = PRODUCTS[currentProduct];
+  const prod = PRODUCTS.find(p => p.id === currentProduct);
+  if(!prod) return;
   const total = prod.rating * prod.reviews;
-  prod.reviews = prod.reviews + 1;
+  prod.reviews = (prod.reviews || 0) + 1;
   prod.rating = ((total + selectedRating) / prod.reviews);
   // update UI in modal
   pmStars.textContent = renderStars(prod.rating);
@@ -984,7 +1052,7 @@ function showToast(text){
   toastTimer = setTimeout(()=> toast.classList.remove('show'), 3000);
 }
 
-/* ---------- Init populate and animation + URL param product open ---------- */
+/* ---------- Init populate and animation ---------- */
 document.addEventListener('DOMContentLoaded', ()=>{
   populateListings();
 
@@ -998,16 +1066,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // ensure featured and top clickable buttons wired (if dynamic)
   document.querySelectorAll('.view-btn, .buy-btn').forEach(b => b.addEventListener('click', e => e.stopPropagation()));
 
-  // check URL for ?producto=slug or id to auto-open product modal
-  const params = new URLSearchParams(window.location.search);
-  const prodParam = params.get('producto') || params.get('product') || params.get('p');
+  // check URL param to open specific product directly e.g. ?producto=maquina-boxeo or ?producto=id
+  const url = new URL(window.location.href);
+  const prodParam = url.searchParams.get('producto') || url.searchParams.get('product') || url.searchParams.get('p');
   if(prodParam){
-    // try find by id or slug
-    const idx = PRODUCTS.findIndex(p => p.id === prodParam || p.slug === prodParam);
-    if(idx !== -1) {
-      // small delay to let layout render then open modal
-      setTimeout(()=> openProductModalByIndex(idx), 300);
-    }
+    // try to find by id or partial match
+    const found = PRODUCTS.find(p => p.id === prodParam || p.id.includes(prodParam) || p.title.toLowerCase().includes(prodParam.toLowerCase()));
+    if(found) setTimeout(()=> openProductModalById(found.id), 300);
   }
 });
 
@@ -1026,7 +1091,10 @@ topProductsList.addEventListener('click',(e)=>{
   const card = e.target.closest('.top-item');
   if(card) {
     const idx = Array.from(topProductsList.children).indexOf(card);
-    if(idx>=0) openProductModalByIndex(idx);
+    if(idx>=0){
+      const p = PRODUCTS[idx];
+      if(p) openProductModalById(p.id);
+    }
   }
 });
 
@@ -1061,80 +1129,3 @@ contactForm.addEventListener('submit', (e)=>{
 
 </body>
 </html>
-<!-- Mensaje inicial arriba de la página -->
-<div id="form-notification" style="background-color: #f7f7f7; padding: 10px; text-align: center; font-weight: bold;">
-  En cuanto termines el formulario serás redireccionado con uno de nuestros asesores para terminar de confirmar tu pedido.
-</div>
-
-<!-- Formulario reforzado -->
-<form id="pedidoForm" style="margin-top: 20px; max-width: 500px; margin-left:auto; margin-right:auto;">
-  <label>Nombre completo*</label>
-  <input type="text" name="nombre" id="nombre" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
-
-  <label>Correo electrónico*</label>
-  <input type="email" name="correo" id="correo" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
-
-  <label>Número de teléfono*</label>
-  <input type="tel" name="telefono" id="telefono" required pattern="[0-9]{7,15}" placeholder="Ej: 3001234567" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-
-  <label>Dirección completa*</label>
-  <input type="text" name="direccion" id="direccion" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
-
-  <label>Comentarios adicionales</label>
-  <textarea name="comentarios" id="comentarios" style="width: 100%; padding: 8px; margin-bottom: 10px;"></textarea>
-
-  <button type="submit" style="padding: 10px 20px; font-weight: bold;">Enviar pedido</button>
-</form>
-
-<!-- Mensaje de envío -->
-<div id="mensajeEnvio" style="display:none; text-align:center; margin-top: 20px; font-weight:bold;">
-  En breve serás redireccionado con un asesor para terminar de confirmar tu pedido.
-</div>
-
-<script>
-document.getElementById('pedidoForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    // Validación básica (ya tenemos required en HTML)
-    var nombre = document.getElementById('nombre').value.trim();
-    var correo = document.getElementById('correo').value.trim();
-    var telefono = document.getElementById('telefono').value.trim();
-    var direccion = document.getElementById('direccion').value.trim();
-    var comentarios = document.getElementById('comentarios').value.trim();
-
-    if(!nombre || !correo || !telefono || !direccion){
-        alert("Por favor completa todos los campos obligatorios.");
-        return;
-    }
-
-    // Enviar datos a tu servidor o correo (ejemplo usando fetch a tu endpoint)
-    fetch('https://tuservidor.com/guardar-formulario', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            nombre: nombre,
-            correo: correo,
-            telefono: telefono,
-            direccion: direccion,
-            comentarios: comentarios
-        })
-    }).then(function(response){
-        // Mostrar mensaje y redireccionar
-        document.getElementById('pedidoForm').style.display = 'none';
-        document.getElementById('mensajeEnvio').style.display = 'block';
-
-        // Redireccionar a WhatsApp después de 3 segundos
-        setTimeout(function(){
-            // Cambia el número de WhatsApp por el tuyo
-            var numeroWhatsApp = '573001234567';
-            var mensaje = encodeURIComponent("Hola, he completado el formulario y quiero confirmar mi pedido.");
-            window.location.href = "https://wa.me/" + numeroWhatsApp + "?text=" + mensaje;
-        }, 3000);
-    }).catch(function(error){
-        alert("Ocurrió un error al enviar el formulario. Intenta nuevamente.");
-        console.error(error);
-    });
-});
-</script>
